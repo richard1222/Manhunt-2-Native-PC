@@ -26,11 +26,11 @@ A research project working toward a native Windows build from an owner-provided 
 
 ## Current development
 
-**Checkpoint 170 · November 8, 2026.** Read the [current status](docs/STATUS.md) and [roadmap](ROADMAP.md) for evidence and remaining work.
+**Checkpoint 184 · November 8, 2026.** Read the [current status](docs/STATUS.md) and [roadmap](ROADMAP.md) for evidence and remaining work.
 
-The local Windows diagnostic includes 502 original-game C++ translation files and 73 explicitly registered relocated-code addresses. All 128 addresses in the checked initializer table are linked. These counts describe the diagnostic subset, not a percentage of a finished port or proof that every initializer completed.
+The local Windows diagnostic includes 534 original-game C++ translation files and 73 explicitly registered relocated-code addresses. All 128 addresses in the checked initializer table are linked. Run-183 reaches the final callback and returns past the original initializer walker; run-184 enters subsequent startup routines. These counts describe the diagnostic subset, not a percentage of a finished port or an audit of every callback.
 
-The latest 13 bounded startup runs compile and execute past their previous missing call. They then stop at the next missing translation, preserving input hashes and three startup code copies. A batching-tool fix now discovers missing dependencies two calls deep when that depth is requested.
+The latest 14 bounded startup runs compile and execute past their previous missing call. They then stop at the next missing translation, preserving input hashes and three startup code copies. A batching-tool fix now discovers missing dependencies two calls deep when that depth is requested.
 
 Independent native checks cover ISO filename lookup and exact boot-file reads, copied-kernel selectors, thread policy, a corrected EntryHi instruction translation, and one differential helper. Their passing scope is detailed in [status](docs/STATUS.md).
 
@@ -40,7 +40,7 @@ Independent native checks cover ISO filename lookup and exact boot-file reads, c
 | --- | --- | --- |
 | Input preservation | Locally checked | ISO and extracted executable hashes are checked before/after startup tests |
 | Function mapping and translation | In progress | 502 C++ files in the current native subset; other generated material stays local |
-| Initializer linkage | Locally checked | 128/128 callback addresses linked; full execution remains unverified |
+| Initializer linkage | Locally checked | 128/128 callback addresses linked; walker return observed; individual callback correctness unverified |
 | Strict startup diagnostics | Locally checked | Missing code stops explicitly instead of returning fabricated success |
 | ISO file access | Narrow native test passed | Boot-file lookup and all 3,703,880 bytes match the independent extracted file |
 | Kernel compatibility | Partial local coverage | Selector, thread and instruction tests; complete hardware behavior unverified |
@@ -56,7 +56,7 @@ This public repository shares project status, milestones and references. Develop
 
 ## Roadmap
 
-1. Complete and verify the original startup initializer sequence.
+1. Validate initializer effects and continue beyond the now-observed walker return.
 2. Resolve reached runtime service and instruction-semantics failures with independent checks.
 3. Establish actual game asset loading from the owner's local image.
 4. Implement and verify the rendering and audio paths needed by the game.

@@ -1,14 +1,16 @@
 # Current development status
 
-As of November 8, 2026; checkpoint 170. Audience: project followers and developers. Success means a playable native Windows build with tested input, graphics and sound. That condition has not been achieved.
+As of November 8, 2026; checkpoint 184. Audience: project followers and developers. Success means a playable native Windows build with tested input, graphics and sound. That condition has not been achieved.
 
 ## Current truth
 
-**Proven locally:** Thirteen additional startup runs (158-170) build and pass their previous observed missing call. The current subset has 502 original-game C++ files, 2,143 original dispatch addresses (including continuation labels), and 73 relocated addresses. All 128 startup callback addresses are linked. Every run preserves pinned input hashes and three byte-matched startup copies.
+**Proven locally:** The original initializer walker has returned. Run-183 reaches its final callback and then the next startup call at `0x368d28 -> 0x276da0`. Original executable words independently confirm that the initializer wrapper call precedes this point. Run-184 progresses into the following startup routines. This is observed control flow, not an individual correctness audit of all 128 callbacks.
 
-**Proven locally:** Latest run exits 2 at missing target `0x1fb2b8`, called from `0x1f6034`, after 0.297 seconds, without timeout. Exit 2 is a deliberate strict stop, not a successful boot. The executable SHA256 is `d5f2df9054b5a118a932cae90a15f968a165c7a2b2d5732f37c0ff3d57374459`.
+**Proven locally:** Fourteen additional startup runs (171-184) compile and pass their previous observed missing call. The current subset has 534 original-game C++ files, 2,240 original dispatch addresses (including continuation labels), and 73 relocated addresses. Every run preserves pinned input hashes and three byte-matched startup copies.
 
-**Proven locally:** A planning regression reproduces missed grandchildren in the old initializer selection, and the corrected depth-bounded search passes depth, limit, cycle and unknown-target cases. Its integration selects previously overlooked dependencies; it does not alter game instructions or runtime failure policy.
+**Proven locally:** Latest run exits 2 at missing target `0x3b8b50`, called from `0x3b8bf0`, after 0.281 seconds without timeout. Exit 2 is a deliberate strict stop, not a successful boot. Executable SHA256: `8867f6307ea39422d4e89a6470252d4edc3cf961e0c1fadd41008fc75a6d9870`.
+
+**Proven locally:** Bounded dependency grouping can now use the exact exercised direct caller, with source/target and archive-byte checks. Regression controls reject wrong, duplicate and indirect call sites. A larger main-startup group exceeded the unchanged dependency bound and was refused before writing sources; a smaller eight-file plan compiled and ran. No game instructions were edited or runtime failure checks bypassed.
 
 ## Independent native checks
 
@@ -27,8 +29,8 @@ These separate regression results were recorded before this source-import/planni
 
 **Inference:** Correctly grouping deeper dependencies reduces repeated omitted-call stops during development. No speed or completion-date estimate is established.
 
-**Unknown:** Completed initializer execution, full runtime semantics, actual game asset streaming, rendering, audio, controller integration and gameplay. No gameplay screenshot exists because the current diagnostic has no demonstrated graphics output.
+**Unknown:** Individual initializer correctness, full runtime semantics, actual game asset streaming, rendering, audio, controller integration and gameplay. No gameplay screenshot exists because the current diagnostic has no demonstrated graphics output.
 
 ## Next
 
-Resolve measured missing target `0x1fb2b8`, then verify the next actual execution result. Investigate service/semantic failures independently; do not replace failures with fake success. Preserve original inputs, previous failed results and the bounded test workflow.
+Resolve measured missing target `0x3b8b50`, then verify the next actual execution result. Investigate service/semantic failures independently; do not replace failures with fake success. Preserve original inputs, previous failed results and the bounded test workflow.

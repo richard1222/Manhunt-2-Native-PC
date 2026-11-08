@@ -5,7 +5,8 @@
 - [x] Build a bounded Windows startup diagnostic with strict missing-code stops.
 - [x] Link all 128 initializer callback addresses.
 - [x] Verify narrow copied-kernel, thread, EntryHi and ISO-read behavior.
-- [ ] Verify completion of the entire original initializer sequence.
+- [x] Observe the original initializer walker return and reach the following startup call.
+- [ ] Verify individual initializer effects and remaining startup semantics.
 - [ ] Establish actual game asset streaming and required services.
 - [ ] Complete the reached instruction, memory, timing and runtime semantics.
 - [ ] Establish native rendering and audio.
