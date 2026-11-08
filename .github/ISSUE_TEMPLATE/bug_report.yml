@@ -1,0 +1,19 @@
+name: Development or documentation issue
+description: Report a reproducible development result or documentation problem.
+title: "[Issue] "
+body:
+  - type: markdown
+    attributes:
+      value: "This project has no playable release yet. Do not attach game images, executables, generated game code, account data or private logs."
+  - type: textarea
+    id: problem
+    attributes:
+      label: Problem and expected result
+    validations:
+      required: true
+  - type: textarea
+    id: reproduce
+    attributes:
+      label: Steps, checkpoint and relevant environment
+    validations:
+      required: true
