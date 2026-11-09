@@ -26,11 +26,11 @@ A research project working toward a native Windows build from an owner-provided 
 
 ## Current development
 
-**Checkpoint 184 · November 8, 2026.** Read the [current status](docs/STATUS.md) and [roadmap](ROADMAP.md) for evidence and remaining work.
+**Checkpoint 195 · November 8, 2026.** Read the [current status](docs/STATUS.md) and [roadmap](ROADMAP.md) for evidence and remaining work.
 
-The local Windows diagnostic includes 534 original-game C++ translation files and 73 explicitly registered relocated-code addresses. All 128 addresses in the checked initializer table are linked. Run-183 reaches the final callback and returns past the original initializer walker; run-184 enters subsequent startup routines. These counts describe the diagnostic subset, not a percentage of a finished port or an audit of every callback.
+The local Windows diagnostic includes 560 original-game C++ translation files and 73 explicitly registered relocated-code addresses. All 128 addresses in the checked initializer table are linked. Run-183 reaches the final callback and returns past the original initializer walker; runs 185-195 continue through startup, and run-195 reaches a native SIF RPC-init wait at `0x3cc9a0`/`0x3cc9a8`: the guest RPC-init request arrives in IOP memory, but the IOP RPC bridge ignores raw SIF transfers, so no reply arrives and the run stops at the five-second watchdog. These counts describe the diagnostic subset, not a percentage of a finished port or an audit of every callback.
 
-The latest 14 bounded startup runs compile and execute past their previous missing call. They then stop at the next missing translation, preserving input hashes and three startup code copies. A batching-tool fix now discovers missing dependencies two calls deep when that depth is requested.
+The latest 11 bounded startup runs (185-195) compile and execute past their previous missing call. Run-195 is a service stall, not another missing translation: the SIF RPC-init request is delivered but unanswered. All runs preserve input hashes and three startup code copies. A batching-tool fix now discovers missing dependencies two calls deep when that depth is requested.
 
 Independent native checks cover ISO filename lookup and exact boot-file reads, copied-kernel selectors, thread policy, a corrected EntryHi instruction translation, and one differential helper. Their passing scope is detailed in [status](docs/STATUS.md).
 
@@ -39,9 +39,10 @@ Independent native checks cover ISO filename lookup and exact boot-file reads, c
 | Workstream | State | Evidence / limit |
 | --- | --- | --- |
 | Input preservation | Locally checked | ISO and extracted executable hashes are checked before/after startup tests |
-| Function mapping and translation | In progress | 502 C++ files in the current native subset; other generated material stays local |
+| Function mapping and translation | In progress | 560 C++ files in the current native subset; other generated material stays local |
 | Initializer linkage | Locally checked | 128/128 callback addresses linked; walker return observed; individual callback correctness unverified |
 | Strict startup diagnostics | Locally checked | Missing code stops explicitly instead of returning fabricated success |
+| SIF RPC initialization | Stall identified | Run-195 waits on RPC-init; request arrives but the IOP bridge ignores raw SIF transfers; a bounded native SIF command endpoint is the next step |
 | ISO file access | Narrow native test passed | Boot-file lookup and all 3,703,880 bytes match the independent extracted file |
 | Kernel compatibility | Partial local coverage | Selector, thread and instruction tests; complete hardware behavior unverified |
 | Rendering and audio | Not established | No successful native game window or audio output |

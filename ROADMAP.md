@@ -6,6 +6,7 @@
 - [x] Link all 128 initializer callback addresses.
 - [x] Verify narrow copied-kernel, thread, EntryHi and ISO-read behavior.
 - [x] Observe the original initializer walker return and reach the following startup call.
+- [x] Reach and identify the native SIF RPC-init service stall (run-195).
 - [ ] Verify individual initializer effects and remaining startup semantics.
 - [ ] Establish actual game asset streaming and required services.
 - [ ] Complete the reached instruction, memory, timing and runtime semantics.

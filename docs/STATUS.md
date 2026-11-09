@@ -1,14 +1,16 @@
 # Current development status
 
-As of November 8, 2026; checkpoint 184. Audience: project followers and developers. Success means a playable native Windows build with tested input, graphics and sound. That condition has not been achieved.
+As of November 8, 2026; checkpoint 195. Audience: project followers and developers. Success means a playable native Windows build with tested input, graphics and sound. That condition has not been achieved.
 
 ## Current truth
 
+**Proven locally:** Run-195 reaches a native SIF RPC-init wait. After linking the actual generated resume entry at `0x3cc9a0`, the run waits between `0x3cc9a0` and `0x3cc9a8` and stops cooperatively at the five-second watchdog (exit 4, 5.875 seconds, no outer timeout). The guest RPC-init flag at `0x661ec0` is zero, the request header `[16, 0, 0x80000002, 1]` is present in IOP memory at address zero, and the IOP snapshot reports zero loaded modules, threads, RPC servers and executed instructions. Source inspection shows the SIF DMA stub copies the request and notifies the IOP subsystem, but the RPC bridge's transfer handler explicitly ignores it. The request copy alone does not create a command response. Executable SHA256: `8fef7301140a03cbf2f38a09c5c3152c04c5f1803e5249bbfa1da58556d144dd`.
+
 **Proven locally:** The original initializer walker has returned. Run-183 reaches its final callback and then the next startup call at `0x368d28 -> 0x276da0`. Original executable words independently confirm that the initializer wrapper call precedes this point. Run-184 progresses into the following startup routines. This is observed control flow, not an individual correctness audit of all 128 callbacks.
 
-**Proven locally:** Fourteen additional startup runs (171-184) compile and pass their previous observed missing call. The current subset has 534 original-game C++ files, 2,240 original dispatch addresses (including continuation labels), and 73 relocated addresses. Every run preserves pinned input hashes and three byte-matched startup copies.
+**Proven locally:** Eleven additional startup runs (185-195) compile and pass their previous observed missing call. The current subset has 560 original-game C++ files, 2,330 original dispatch addresses (including continuation labels), and 73 relocated addresses. Every run preserves pinned input hashes and three byte-matched startup copies. Run-195 is a service stall, not a missing translation.
 
-**Proven locally:** Latest run exits 2 at missing target `0x3b8b50`, called from `0x3b8bf0`, after 0.281 seconds without timeout. Exit 2 is a deliberate strict stop, not a successful boot. Executable SHA256: `8867f6307ea39422d4e89a6470252d4edc3cf961e0c1fadd41008fc75a6d9870`.
+**Proven locally:** Latest run (195) exits 4 at the SIF RPC-init wait (`0x3cc9a0`/`0x3cc9a8`) after 5.875 seconds at the five-second watchdog, without an outer timeout. Exit 4 is a cooperative watchdog stop, not a successful boot. The earlier run-184 exit-2 stop at missing target `0x3b8b50` is superseded. Executable SHA256: `8fef7301140a03cbf2f38a09c5c3152c04c5f1803e5249bbfa1da58556d144dd`.
 
 **Proven locally:** Bounded dependency grouping can now use the exact exercised direct caller, with source/target and archive-byte checks. Regression controls reject wrong, duplicate and indirect call sites. A larger main-startup group exceeded the unchanged dependency bound and was refused before writing sources; a smaller eight-file plan compiled and ran. No game instructions were edited or runtime failure checks bypassed.
 
@@ -33,4 +35,4 @@ These separate regression results were recorded before this source-import/planni
 
 ## Next
 
-Resolve measured missing target `0x3b8b50`, then verify the next actual execution result. Investigate service/semantic failures independently; do not replace failures with fake success. Preserve original inputs, previous failed results and the bounded test workflow.
+Design and independently test a bounded native SIF command endpoint: validate complete packets, track the receive address from initialization, route responses through the guest's registered handler, and reject malformed/unsupported commands. Check native RPC provider readiness before declaring initialization complete. Include malformed-packet, address-range, duplicate/reset and interrupt-delivery controls before integrating. Do not force the flag, skip the wait, or run the automatic missing-target extension on run-195. Preserve original inputs, previous failed results and the bounded test workflow.
