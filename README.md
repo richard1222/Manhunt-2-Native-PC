@@ -26,23 +26,26 @@ A research project working toward a native Windows build from an owner-provided 
 
 ## Current development
 
-**Checkpoint 195 · November 8, 2026.** Read the [current status](docs/STATUS.md) and [roadmap](ROADMAP.md) for evidence and remaining work.
+**Checkpoint 198 · November 9, 2026.** Read the [current status](docs/STATUS.md) and [roadmap](ROADMAP.md) for evidence and remaining work.
 
-The local Windows diagnostic includes 560 original-game C++ translation files and 73 explicitly registered relocated-code addresses. All 128 addresses in the checked initializer table are linked. Run-183 reaches the final callback and returns past the original initializer walker; runs 185-195 continue through startup, and run-195 reaches a native SIF RPC-init wait at `0x3cc9a0`/`0x3cc9a8`: the guest RPC-init request arrives in IOP memory, but the IOP RPC bridge ignores raw SIF transfers, so no reply arrives and the run stops at the five-second watchdog. These counts describe the diagnostic subset, not a percentage of a finished port or an audit of every callback.
+The local Windows diagnostic includes 561 original-game C++ translation files and 73 explicitly registered relocated-code addresses. All 128 addresses in the checked initializer table are linked. Run-183 reaches the final callback and returns past the original initializer walker; runs 185-198 continue through startup. Run-195 reached a native SIF RPC-init wait at `0x3cc9a0`/`0x3cc9a8`: the guest RPC-init request arrived in IOP memory, but the IOP RPC bridge ignores raw SIF transfers, so no reply arrived and the run stopped at the five-second watchdog. Runs 196-197 repeated that stall. Run-198 resolves it: the guest SIF handler at `0x3cc0c0` was linked into the probe, the native SIF reply was delivered through the game's own handler, the guest flag at `0x661ec0` moved to 1, and the run exits 2 in 0.281 seconds at a new stop, a cdvdfsv READ at `0x3cce90`. These counts describe the diagnostic subset, not a percentage of a finished port or an audit of every callback.
 
-The latest 11 bounded startup runs (185-195) compile and execute past their previous missing call. Run-195 is a service stall, not another missing translation: the SIF RPC-init request is delivered but unanswered. All runs preserve input hashes and three startup code copies. A batching-tool fix now discovers missing dependencies two calls deep when that depth is requested.
+The latest 14 bounded startup runs (185-198) compile and execute past their previous missing call. Run-198 resolves the SIF RPC-init service stall that stopped runs 194-197: the native SIF reply is now delivered through the guest's own handler at `0x3cc0c0`, and the run reaches CDVD file loading. All runs preserve input hashes and three startup code copies. A batching-tool fix now discovers missing dependencies two calls deep when that depth is requested.
 
 Independent native checks cover ISO filename lookup and exact boot-file reads, copied-kernel selectors, thread policy, a corrected EntryHi instruction translation, and one differential helper. Their passing scope is detailed in [status](docs/STATUS.md).
+
+A parallel hand-decompilation track in a separate local project has lifted all 102 distinct handlers of the main entity dispatcher (141 types) to C, about 4,100 lines across 40 files, and built a MMI disassembler, a cross-build signature scanner and a differential test lane. That code is not published here. A November 2026 survey of public sources found no other public Manhunt 2 native-port or decompilation project.
 
 ## Progress chart
 
 | Workstream | State | Evidence / limit |
 | --- | --- | --- |
 | Input preservation | Locally checked | ISO and extracted executable hashes are checked before/after startup tests |
-| Function mapping and translation | In progress | 560 C++ files in the current native subset; other generated material stays local |
+| Function mapping and translation | In progress | 561 C++ files in the current native subset; other generated material stays local |
 | Initializer linkage | Locally checked | 128/128 callback addresses linked; walker return observed; individual callback correctness unverified |
 | Strict startup diagnostics | Locally checked | Missing code stops explicitly instead of returning fabricated success |
-| SIF RPC initialization | Stall identified | Run-195 waits on RPC-init; request arrives but the IOP bridge ignores raw SIF transfers; a bounded native SIF command endpoint is the next step |
+| SIF RPC initialization | Resolved in run-198 | Guest handler at `0x3cc0c0` linked; native SIF reply delivered through it; guest flag at `0x661ec0` moved to 1; run now stops at a cdvdfsv READ at `0x3cce90` |
+| Hand decompilation (parallel track) | In progress | All 102 distinct handlers of the main entity dispatcher lifted to C (141 types), about 4,100 lines across 40 files in a separate local project; that code is not published here |
 | ISO file access | Narrow native test passed | Boot-file lookup and all 3,703,880 bytes match the independent extracted file |
 | Kernel compatibility | Partial local coverage | Selector, thread and instruction tests; complete hardware behavior unverified |
 | Rendering and audio | Not established | No successful native game window or audio output |

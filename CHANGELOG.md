@@ -1,5 +1,13 @@
 # Project updates
 
+## SIF RPC-init stall resolved - November 9, 2026
+
+**Proven:** Run-198 resolves the native SIF RPC-init stall that stopped runs 194-197. The guest SIF handler at `0x3cc0c0` was linked into the startup probe; the native SIF reply was delivered through the game's own handler, the guest flag at `0x661ec0` moved to 1, and the run exits 2 in 0.281 seconds. Startup now reaches CDVD file loading and stops at a cdvdfsv READ at `0x3cce90`. The diagnostic subset now contains 561 original C++ files and 2,331 dispatch addresses.
+
+**Unknown:** cdvdfsv service coverage, subsequent RPC bind/call coverage, rendering, audio, controller support and gameplay. No playable release is published. The next step is linking `0x3cce90` and assessing the cdvdfsv service. See [current status](docs/STATUS.md).
+
+---
+
 ## SIF RPC-init stall identified - November 8, 2026
 
 **Proven:** Runs 185-195 advance startup past the initializer walker. Run-195 reaches a native SIF RPC-init wait at `0x3cc9a0`/`0x3cc9a8`: the guest RPC-init request `[16, 0, 0x80000002, 1]` arrives in IOP memory, but the IOP RPC bridge ignores raw SIF transfers, so no reply arrives and the run stops at the five-second watchdog (exit 4). The diagnostic subset now contains 560 original C++ files and 2,330 dispatch addresses.
